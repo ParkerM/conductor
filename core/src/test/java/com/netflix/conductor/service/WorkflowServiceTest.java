@@ -32,53 +32,58 @@ import com.netflix.conductor.core.config.ValidationModule;
 import com.netflix.conductor.core.execution.ApplicationException;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
 import com.netflix.conductor.interceptors.ServiceInterceptor;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
 
 import static com.netflix.conductor.utility.TestUtils.getConstraintViolationMessages;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyListOf;
 import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.anyMapOf;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class WorkflowServiceTest {
 
+    @Mock
     private WorkflowExecutor mockWorkflowExecutor;
 
+    @Mock
     private ExecutionService mockExecutionService;
 
+    @Mock
     private MetadataService mockMetadata;
+
+    @Mock
+    private Configuration mockConfig;
 
     private WorkflowService workflowService;
 
     @Before
     public void before() {
-        this.mockWorkflowExecutor = Mockito.mock(WorkflowExecutor.class);
-        this.mockExecutionService = Mockito.mock(ExecutionService.class);
-        this.mockMetadata = Mockito.mock(MetadataService.class);
-        Configuration mockConfig = Mockito.mock(Configuration.class);
-
         when(mockConfig.getIntProperty(anyString(), anyInt())).thenReturn(5_000);
-        this.workflowService = new WorkflowServiceImpl(this.mockWorkflowExecutor, this.mockExecutionService,
-                this.mockMetadata, mockConfig);
+
+        workflowService = new WorkflowServiceImpl(mockWorkflowExecutor, mockExecutionService, mockMetadata, mockConfig);
         Injector injector =
                 Guice.createInjector(
                         new AbstractModule() {
@@ -129,19 +134,17 @@ public class WorkflowServiceTest {
 
         StartWorkflowRequest startWorkflowRequest = new StartWorkflowRequest();
         startWorkflowRequest.setName("w123");
+        startWorkflowRequest.setVersion(1);
 
         Map<String, Object> input = new HashMap<>();
         input.put("1", "abc");
         startWorkflowRequest.setInput(input);
         String workflowID = "w112";
 
-        when(mockMetadata.getWorkflowDef(anyString(), anyInt())).thenReturn(workflowDef);
-        when(mockWorkflowExecutor.startWorkflow(anyString(), anyInt(), anyString(),
-                anyMapOf(String.class, Object.class), any(String.class), any(String.class),
-                anyMapOf(String.class, String.class))).thenReturn(workflowID);
-        when(mockWorkflowExecutor.startWorkflow(anyString(), anyInt(), anyString(), anyInt(),
-                anyMapOf(String.class, Object.class), any(String.class), any(String.class),
-                anyMapOf(String.class, String.class))).thenReturn(workflowID);
+        when(mockMetadata.getWorkflowDef("w123", 1)).thenReturn(workflowDef);
+        when(mockWorkflowExecutor
+                .startWorkflow(anyString(), anyInt(), isNull(), anyInt(), anyMap(), anyString(), anyString(), anyMap()))
+                .thenReturn(workflowID);
         assertEquals("w112", workflowService.startWorkflow(startWorkflowRequest));
     }
 
@@ -156,11 +159,16 @@ public class WorkflowServiceTest {
         String workflowID = "w112";
 
         when(mockMetadata.getWorkflowDef(anyString(), anyInt())).thenReturn(workflowDef);
-        when(mockWorkflowExecutor.startWorkflow(anyString(), anyInt(), anyString(),
-                anyMapOf(String.class, Object.class), any(String.class))).thenReturn(workflowID);
-        when(mockWorkflowExecutor.startWorkflow(anyString(), anyInt(), anyString(), anyInt(),
-                anyMapOf(String.class, Object.class), any(String.class))).thenReturn(workflowID);
-        assertEquals("w112", workflowService.startWorkflow("test", 1, "c123", input));
+        when(mockWorkflowExecutor
+                .startWorkflow(anyString(), anyInt(), anyString(), anyInt(), anyMap(), isNull()))
+                .thenReturn(workflowID);
+
+        String actualWorkflowId = workflowService.startWorkflow("test", 1, "c123", input);
+
+        verify(mockMetadata).getWorkflowDef("test", 1);
+        verify(mockWorkflowExecutor).startWorkflow("test", 1, "c123", 0, input, null);
+
+        assertEquals("w112", actualWorkflowId);
     }
 
     @Test(expected = ApplicationException.class)
@@ -363,7 +371,8 @@ public class WorkflowServiceTest {
 
     @Test
     public void testSkipTaskFromWorkflow() {
-        workflowService.skipTaskFromWorkflow("test", "testTask", null);
+        SkipTaskRequest skipTaskRequest = new SkipTaskRequest();
+        workflowService.skipTaskFromWorkflow("test", "testTask", skipTaskRequest);
         verify(mockWorkflowExecutor, times(1)).skipTaskFromWorkflow(anyString(), anyString(),
                 any(SkipTaskRequest.class));
     }
@@ -478,9 +487,10 @@ public class WorkflowServiceTest {
         List<WorkflowSummary> listOfWorkflowSummary = new ArrayList<WorkflowSummary>() {{
             add(workflowSummary);
         }};
-        SearchResult<WorkflowSummary> searchResult = new SearchResult<WorkflowSummary>(100, listOfWorkflowSummary);
+        SearchResult<WorkflowSummary> searchResult = new SearchResult<>(100, listOfWorkflowSummary);
 
-        when(mockExecutionService.search(anyString(), anyString(), anyInt(), anyInt(), anyListOf(String.class))).thenReturn(searchResult);
+        when(mockExecutionService.search(anyString(), anyString(), anyInt(), anyInt(), anyList()))
+                .thenReturn(searchResult);
         assertEquals(searchResult, workflowService.searchWorkflows(0,100,"asc", "*", "*"));
     }
 
@@ -499,7 +509,8 @@ public class WorkflowServiceTest {
     @Test
     public void searchWorkflowsByTasks() {
         workflowService.searchWorkflowsByTasks(0,100,"asc", "*", "*");
-        verify(mockExecutionService, times(1)).searchWorkflowByTasks(anyString(), anyString(), anyInt(), anyInt(), anyListOf(String.class));
+        verify(mockExecutionService, times(1))
+                .searchWorkflowByTasks(anyString(), anyString(), anyInt(), anyInt(), anyList());
     }
 
 
