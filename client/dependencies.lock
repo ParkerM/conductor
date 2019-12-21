@@ -95,7 +95,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         }
     },
     "compileClasspath": {
@@ -194,7 +194,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         }
     },
     "default": {
@@ -293,7 +293,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         }
     },
     "findbugs": {
@@ -412,7 +412,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         }
     },
     "runtimeClasspath": {
@@ -511,7 +511,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         }
     },
     "testCompile": {
@@ -618,11 +618,11 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4"
         },
         "org.slf4j:slf4j-log4j12": {
-            "locked": "1.8.0-alpha1",
-            "requested": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4",
+            "requested": "1.8.0-beta4"
         }
     },
     "testCompileClasspath": {
@@ -729,11 +729,11 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4"
         },
         "org.slf4j:slf4j-log4j12": {
-            "locked": "1.8.0-alpha1",
-            "requested": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4",
+            "requested": "1.8.0-beta4"
         }
     },
     "testRuntime": {
@@ -840,11 +840,11 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4"
         },
         "org.slf4j:slf4j-log4j12": {
-            "locked": "1.8.0-alpha1",
-            "requested": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4",
+            "requested": "1.8.0-beta4"
         }
     },
     "testRuntimeClasspath": {
@@ -951,11 +951,11 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4"
         },
         "org.slf4j:slf4j-log4j12": {
-            "locked": "1.8.0-alpha1",
-            "requested": "1.8.0-alpha1"
+            "locked": "1.8.0-beta4",
+            "requested": "1.8.0-beta4"
         }
     }
 }

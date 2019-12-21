@@ -18,7 +18,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-client"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.amazonaws:aws-java-sdk-s3": {
             "firstLevelTransitive": [
@@ -30,7 +30,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -441,13 +441,13 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.awaitility:awaitility": {
             "locked": "3.1.2",
@@ -547,7 +547,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         },
         "redis.clients:jedis": {
             "firstLevelTransitive": [
@@ -565,7 +565,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-client"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.amazonaws:aws-java-sdk-s3": {
             "firstLevelTransitive": [
@@ -577,7 +577,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -988,13 +988,13 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.awaitility:awaitility": {
             "locked": "3.1.2",
@@ -1094,7 +1094,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         },
         "redis.clients:jedis": {
             "firstLevelTransitive": [
@@ -1112,7 +1112,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-client"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.amazonaws:aws-java-sdk-s3": {
             "firstLevelTransitive": [
@@ -1124,7 +1124,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -1535,13 +1535,13 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.awaitility:awaitility": {
             "locked": "3.1.2",
@@ -1641,7 +1641,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         },
         "redis.clients:jedis": {
             "firstLevelTransitive": [
@@ -1659,7 +1659,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-client"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.amazonaws:aws-java-sdk-s3": {
             "firstLevelTransitive": [
@@ -1671,7 +1671,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.687"
+            "locked": "1.11.698"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -2082,13 +2082,13 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.apache.logging.log4j:log4j-core": {
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-es5-persistence"
             ],
-            "locked": "2.9.1"
+            "locked": "2.13.0"
         },
         "org.awaitility:awaitility": {
             "locked": "3.1.2",
@@ -2188,7 +2188,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-common"
             ],
-            "locked": "1.7.25"
+            "locked": "1.7.30"
         },
         "redis.clients:jedis": {
             "firstLevelTransitive": [
