@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -268,16 +269,19 @@ public class SimpleEventProcessor implements EventProcessor {
      * Used to determine if the exception is thrown due to a transient failure
      * and the operation is expected to succeed upon retrying.
      *
-     * @param throwableException the exception that is thrown
-     * @return true - if the exception is a transient failure
+     * @param throwable the exception that is thrown
+     * @return true - if the exception is a transient failure (or null).
      * false - if the exception is non-transient
      */
-    private boolean isTransientException(Throwable throwableException) {
-        if (throwableException != null) {
-            return !((throwableException instanceof UnsupportedOperationException) ||
-                    (throwableException instanceof ApplicationException && ((ApplicationException) throwableException).getCode() != ApplicationException.Code.BACKEND_ERROR));
-        }
-        return true;
+    private boolean isTransientException(@Nullable Throwable throwable) {
+        if (throwable == null)
+            return true;
+        if (throwable instanceof UnsupportedOperationException)
+            return false;
+        if (throwable instanceof ApplicationException)
+            return ((ApplicationException) throwable).getCode() != ApplicationException.Code.BACKEND_ERROR;
+
+        return false;
     }
 
     private Object getPayloadObject(String payload) {

@@ -24,14 +24,19 @@ import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.google.common.base.Predicate;
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.Fallback;
+import net.jodah.failsafe.RetryPolicy;
+import net.jodah.failsafe.util.concurrent.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
@@ -65,6 +70,7 @@ import static java.lang.String.format;
 public class RetryUtil<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(RetryUtil.class);
+    public static final int MAX_ATTEMPTS = 3;
 
     private AtomicInteger internalNumberOfRetries = new AtomicInteger();
 
@@ -87,44 +93,47 @@ public class RetryUtil<T> {
      *                          <li>And a reference to the original exception generated during the last {@link Attempt} of the retry</li>
      *                          </ul>
      */
-    @SuppressWarnings("Guava")
     public T retryOnException(Supplier<T> supplierCommand,
                               Predicate<Throwable> throwablePredicate,
                               Predicate<T> resultRetryPredicate,
                               int retryCount,
                               String shortDescription, String operationName) throws RuntimeException {
-
-        Retryer<T> retryer = RetryerBuilder.<T>newBuilder()
-                .retryIfException(Optional.ofNullable(throwablePredicate).orElse(exception -> true))
-                .retryIfResult(Optional.ofNullable(resultRetryPredicate).orElse(result -> false))
-                .withWaitStrategy(WaitStrategies.join(
-                        WaitStrategies.exponentialWait(1000, 90, TimeUnit.SECONDS),
-                        WaitStrategies.randomWait(100, TimeUnit.MILLISECONDS, 500, TimeUnit.MILLISECONDS)
-                ))
-                .withStopStrategy(StopStrategies.stopAfterAttempt(retryCount))
-                .withBlockStrategy(BlockStrategies.threadSleepStrategy())
-                .withRetryListener(new RetryListener() {
-                    @Override
-                    public <V> void onRetry(Attempt<V> attempt) {
-                        logger.debug("Attempt # {}, {} millis since first attempt. Operation: {}, description:{}",
-                                attempt.getAttemptNumber(), attempt.getDelaySinceFirstAttempt(), operationName, shortDescription);
-                        internalNumberOfRetries.incrementAndGet();
-                    }
+        RetryPolicy<T> retryPolicy = new RetryPolicy<T>()
+                .withBackoff(1, 90, ChronoUnit.SECONDS)
+                .withJitter(0.25)
+                .withMaxAttempts(retryCount)
+                .onRetry(attempt -> {
+                    logger.debug("Attempt # {}, {} millis since first attempt. Operation: {}, description:{}",
+                            attempt.getAttemptCount(), attempt.getElapsedTime(), operationName, shortDescription);
+                    internalNumberOfRetries.incrementAndGet();
                 })
-                .build();
-
-        try {
-            return retryer.call(supplierCommand::get);
-        } catch (ExecutionException executionException) {
-            String errorMessage = format("Operation '%s:%s' failed for the %d time in RetryUtil", operationName,
-                    shortDescription, internalNumberOfRetries.get());
-            logger.debug(errorMessage);
-            throw new RuntimeException(errorMessage, executionException.getCause());
-        } catch (RetryException retryException) {
-            String errorMessage = format("Operation '%s:%s' failed after retrying %d times, retry limit %d", operationName,
-                    shortDescription, internalNumberOfRetries.get(), 3);
-            logger.error(errorMessage, retryException.getLastFailedAttempt().getExceptionCause());
-            throw new RuntimeException(errorMessage, retryException.getLastFailedAttempt().getExceptionCause());
+                .onFailure(event -> {
+                    String errorMessage = format("Operation '%s:%s' failed after retrying %d times, retry limit %d",
+                            operationName, shortDescription, internalNumberOfRetries.get(), MAX_ATTEMPTS);
+                    logger.error(errorMessage, event.getFailure());
+                    throw new RuntimeException(errorMessage, event.getFailure());
+                });
+        if (throwablePredicate != null) {
+            retryPolicy.handleIf(throwablePredicate);
         }
+        if (resultRetryPredicate != null) {
+//            retryPolicy.handleResultIf(resultRetryPredicate);
+        }
+
+        return Failsafe.with(retryPolicy).get(supplierCommand::get);
+
+//        try {
+//            return retryer.call(supplierCommand::get);
+//        } catch (ExecutionException executionException) {
+//            String errorMessage = format("Operation '%s:%s' failed for the %d time in RetryUtil", operationName,
+//                    shortDescription, internalNumberOfRetries.get());
+//            logger.debug(errorMessage);
+//            throw new RuntimeException(errorMessage, executionException.getCause());
+//        } catch (RetryException retryException) {
+//            String errorMessage = format("Operation '%s:%s' failed after retrying %d times, retry limit %d", operationName,
+//                    shortDescription, internalNumberOfRetries.get(), 3);
+//            logger.error(errorMessage, retryException.getLastFailedAttempt().getExceptionCause());
+//            throw new RuntimeException(errorMessage, retryException.getLastFailedAttempt().getExceptionCause());
+//        }
     }
 }
